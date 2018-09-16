@@ -8,11 +8,10 @@ namespace MarksBankLedger
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             Console.OutputEncoding = Encoding.UTF8;
             LedgerInterface.PrintWelcome();
-            Console.ReadKey();
         }
     }
 }
