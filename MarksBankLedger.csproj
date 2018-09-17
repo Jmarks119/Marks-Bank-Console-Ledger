@@ -71,8 +71,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountController.cs" />
+    <Compile Include="DAL\AccountRepository.cs" />
     <Compile Include="DAL\DBContext.cs" />
     <Compile Include="DAL\IAccountRepository.cs" />
+    <Compile Include="DAL\ITransactionRepository.cs" />
+    <Compile Include="DAL\TransactionRepository.cs" />
     <Compile Include="LedgerInterface.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Transaction.cs" />
