@@ -12,6 +12,7 @@ namespace MarksBankLedger
         {
             Console.OutputEncoding = Encoding.UTF8;
             LedgerInterface.PrintWelcome();
+            AccountController.HandleLogin();
         }
     }
 }
