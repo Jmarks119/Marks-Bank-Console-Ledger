@@ -12,6 +12,8 @@ namespace MarksBankLedger
         private static readonly IAccountRepository accountRepository;
         private static readonly ITransactionRepository transactionRepository;
 
+        private static bool exiting = false;
+
         static AccountController()
         {
             BankContext context = new BankContext();
@@ -19,21 +21,32 @@ namespace MarksBankLedger
             transactionRepository = new TransactionRepository(context);
         }
 
-        public static void HandleLogin()
+        public static void TopMenu()
         {
             while (true)
             {
-                Dictionary<string, string> optionsDict = new Dictionary<string, string>()
+                Dictionary<string, Tuple<string, Action>> optionsDict = new Dictionary<string, Tuple<string, Action>>()
                 {
-                    {"L", "Login to, or create, a bank account" },
-                    {"Q", "Exit this program" }
+                    {"L", new Tuple<string, Action>("Login to, or create, a bank account", HandleLogin) },
+                    {"Q", new Tuple<string, Action>("Exit this program", Exit) }
                 };
                 string selection = LedgerInterface.DisplayMenu(optionsDict, "guest");
-                if (selection == "Q")
+                optionsDict[selection].Item2.Invoke(); //Call the action in the tuple for the selected Dictionary entry.
+                if (exiting)
                 {
                     return;
                 }
             }
+        }
+
+        private static void HandleLogin()
+        {
+
+        }
+
+        private static void Exit()
+        {
+            exiting = true;
         }
     }
 }

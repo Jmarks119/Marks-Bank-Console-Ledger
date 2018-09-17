@@ -11,8 +11,8 @@ namespace MarksBankLedger
         static void Main()
         {
             Console.OutputEncoding = Encoding.UTF8;
-            LedgerInterface.PrintWelcome();
-            AccountController.HandleLogin();
+            LedgerInterface.DisplayWelcome();
+            AccountController.TopMenu();
         }
     }
 }
