@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +12,9 @@ namespace MarksBankLedger
 {
     public static class LedgerInterface
     {
-        public static void DisplayWelcome()
+        internal static void DisplayWelcome()
         {
-            Colors.WriteLine(new Document {
+            ConsoleRenderer.RenderDocument(new Document {
                 Width = Console.BufferWidth,
                 TextAlign = TextAlign.Center,
                 Padding = 2,
@@ -31,7 +30,7 @@ namespace MarksBankLedger
             Console.ReadKey();
         }
 
-        public static string DisplayMenu(Dictionary<string, Tuple<string, Action>> options, string user)
+        internal static string DisplayMenu(Dictionary<string, Tuple<string, Action>> options, string user)
         {
             bool invalidSelection = false;
 
@@ -53,12 +52,10 @@ namespace MarksBankLedger
                             },
                             Children = {
                                 options.Select(opt => new [] {
-                                    new Cell
-                                    {
+                                    new Cell {
                                         Children = { opt.Key }
                                     },
-                                    new Cell
-                                    {
+                                    new Cell {
                                         Align = Align.Right,
                                         Children = { opt.Value.Item1 }
                                     }
@@ -72,7 +69,6 @@ namespace MarksBankLedger
 
                 Console.Clear();
                 ConsoleRenderer.RenderDocument(menu);
-                Console.CursorVisible = false;
                 string selection = Console.ReadKey().KeyChar.ToString().ToUpper();
                 if (options.Keys.Contains(selection))
                 {
@@ -82,6 +78,66 @@ namespace MarksBankLedger
                 {
                     invalidSelection = true; // Flip the invalid selection boolean so that the menu re-renders with an error message.
                 }
+            }
+        }
+
+        internal static string DisplayPrompt(string prompt)
+        {
+            bool returning = false;
+            StringBuilder entry = new StringBuilder();
+            while (!returning)
+            {
+                Console.Clear();
+                ConsoleRenderer.RenderDocument(
+                new Document()
+                {
+                    TextAlign = TextAlign.Center,
+                    Padding = 2,
+                    Children = {
+                        new Span(prompt) {Color = DarkYellow},
+                        new Span(entry.ToString()) {Color = Green} 
+                    }
+                });
+                char character = Console.ReadKey().KeyChar;
+                if (character == '\r')
+                {
+                    returning = true;
+                }
+                else if (character == '\b')
+                {
+                    entry.Remove(entry.Length - 1, 1);
+                }
+                else
+                {
+                    entry.Append(character);
+                }
+            }
+            return entry.ToString();
+        }
+
+        /// <summary>
+        /// A specific prompt for getting a yes/no confirmation from the user.
+        /// </summary>
+        /// <param name="prompt">A message to display to the user for them to reply yes or no to.</param>
+        /// <returns>true if the user selects y, false if any other key is pressed.</returns>
+        internal static bool DisplayConfirmation(string prompt)
+        {
+            Console.Clear();
+            ConsoleRenderer.RenderDocument(new Document()
+            {
+                TextAlign = TextAlign.Center,
+                Color = Red,
+                Padding = 2,
+                Children = { new Span(prompt) }
+            });
+            char entry = Console.ReadKey().KeyChar;
+            if (entry == 'y' || entry == 'Y')
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }

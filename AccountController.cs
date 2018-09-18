@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,7 +42,35 @@ namespace MarksBankLedger
 
         private static void HandleLogin()
         {
-
+            while (true)
+            {
+                try
+                {
+                    MailAddress email = new MailAddress(LedgerInterface.DisplayPrompt("Please enter your email address: "));
+                    MailAddress emailConfirm = new MailAddress(LedgerInterface.DisplayPrompt("Please enter your email again to confirm: "));
+                    if (!email.Equals(emailConfirm))
+                    {
+                        if (!LedgerInterface.DisplayConfirmation("Your email entries do not match. Press Y/y to try again, or any other key to cancel."))
+                        {
+                            return;
+                        }
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    if (!LedgerInterface.DisplayConfirmation("You must enter an email address to login. Press Y/y to try again, or any other key to cancel."))
+                    {
+                        return;
+                    }
+                }
+                catch (FormatException)
+                {
+                    if (!LedgerInterface.DisplayConfirmation("That email was not in an accepted format. Press Y/y to try again, or any other key to cancel."))
+                    {
+                        return;
+                    }
+                }
+            }
         }
 
         private static void Exit()
