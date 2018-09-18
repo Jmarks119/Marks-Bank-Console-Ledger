@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MarksBankLedger.Models
 {
+    [Table("Transaction")]
     public class Transaction
     {
         public int TransactionId { get; set; }
