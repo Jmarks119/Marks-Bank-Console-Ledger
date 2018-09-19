@@ -19,12 +19,12 @@ namespace MarksBankLedger
                 Width = Console.BufferWidth,
                 TextAlign = TextAlign.Center,
                 Padding = 2,
-                Children = {
+                Children =
+                {
                     new FigletDiv() {Text = "Marks Bank", Align = Align.Center, Color = Green },
                     new Span("Welcome to the Marks Bank's console ledger access point. Please log in with your account in order to access " +
                              "your balance and withdraw or deposit funds. If you do not yet have an account with Marks Bank then creating one is as easy " +
-                             "as providing an e-mail. Press any key to continue to the login menu.")
-                    { Color = Blue }
+                             "as providing an e-mail. Press any key to continue to the login menu.") { Color = Blue }
                 }
             });
             Console.ReadKey();
@@ -58,24 +58,24 @@ namespace MarksBankLedger
                     Width = Console.BufferWidth,
                     TextAlign = TextAlign.Center,
                     Padding = 2,
-                    Children = {
+                    Children =
+                    {
                         new Span($"Hello {user}. Please select an option below and press the listed key to execute it.\n") {Color = Blue },
-                        new Grid {
+                        new Grid
+                        {
                             Color = Green,
                             Align = Align.Center,
-                            Columns = {
+                            Columns =
+                            {
                                 new Column {Width = GridLength.Char(1)},
-                                new Column {Width = GridLength.Auto, MinWidth = 80}
+                                new Column {Width = GridLength.Auto}
                             },
-                            Children = {
-                                options.Select(opt => new [] {
-                                    new Cell {
-                                        Children = { opt.Key }
-                                    },
-                                    new Cell {
-                                        Align = Align.Right,
-                                        Children = { opt.Value.Item1 }
-                                    }
+                            Children =
+                            {
+                                options.Select(opt => new []
+                                {
+                                    new Cell(opt.Key),
+                                    new Cell(opt.Value.Item1) {Align = Align.Right}
                                 })
                             }
                         },

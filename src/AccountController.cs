@@ -24,7 +24,7 @@ namespace MarksBankLedger
         static AccountController()
         {
             var connection = new SQLiteConnection("Data Source=:memory:;Version=3;New=True;");
-            connection.Open();
+            connection.Open(); // This call is required for an in-memory SQLite database to function
             BankContext context = new BankContext(connection);
             context.Database.CreateIfNotExists();
             accountRepository = new AccountRepository(context);
@@ -216,7 +216,7 @@ namespace MarksBankLedger
 
         private static void Exit()
         {
-            exiting = true;
+            exiting = true; // setting this bool to true causes the application to return all the way up to Program() and then close.
         }
 
         private static string GenerateLoginToken(int length)
