@@ -35,7 +35,7 @@ namespace MarksBankLedger
                 mail.To.Add(recieveAddress);
                 mail.Subject = "Your Login For MarksBank";
                 mail.Body = "Your login token for Marks Bank is " + confirmationString;
-                //client.Send(mail);
+                client.Send(mail);
                 return true;
             }
             catch (SmtpException)

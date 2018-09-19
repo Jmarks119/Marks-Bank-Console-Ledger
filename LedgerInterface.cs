@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Alba.CsConsoleFormat;
 using Alba.CsConsoleFormat.ColorfulConsole;
 using Alba.CsConsoleFormat.Fluent;
+using MarksBankLedger.Models;
 using static System.ConsoleColor;
 
 namespace MarksBankLedger
@@ -26,7 +27,22 @@ namespace MarksBankLedger
                     { Color = Blue }
                 }
             });
-            Console.CursorVisible = false;
+            Console.ReadKey();
+        }
+
+        internal static void DisplayGoodbye()
+        {
+            ConsoleRenderer.RenderDocument(new Document
+            {
+                Width = Console.BufferWidth,
+                TextAlign = TextAlign.Center,
+                Padding = 2,
+                Children =
+                {
+                    new FigletDiv() {Text = "Marks Bank", Align = Align.Center, Color = Green },
+                    new Span("Thank you for your continued usage of Marks Bank. Have a great day.") { Color = Blue }
+                }
+            });
             Console.ReadKey();
         }
 
@@ -36,7 +52,8 @@ namespace MarksBankLedger
 
             while (true)
             {
-                var menu = new Document
+                Console.Clear();
+                ConsoleRenderer.RenderDocument(new Document
                 {
                     Width = Console.BufferWidth,
                     TextAlign = TextAlign.Center,
@@ -65,10 +82,7 @@ namespace MarksBankLedger
                         invalidSelection ? new Span("Sorry, that is an invalid selection, please press another key") {Color = Red}
                                          : null,
                     }
-                };
-
-                Console.Clear();
-                ConsoleRenderer.RenderDocument(menu);
+                });
                 string selection = Console.ReadKey().KeyChar.ToString().ToUpper();
                 if (options.Keys.Contains(selection))
                 {
@@ -139,6 +153,44 @@ namespace MarksBankLedger
             {
                 return false;
             }
+        }
+
+        internal static void DisplayTransactionHistory(string user, decimal balance, IEnumerable<Transaction> transactions)
+        {
+            Console.Clear();
+            ConsoleRenderer.RenderDocument(new Document()
+            {
+                Padding = 2,
+                TextAlign = TextAlign.Center,
+                Color = DarkYellow,
+                Children =
+                {
+                    new Span($"Here is a list of your recent transactions "), new Span(user) {Color = Blue },
+                    new Span("\nYour current balance is "), new Span(string.Format("{0:C2}", balance)) {Color = Green },
+                    new Grid()
+                    {
+                        Align = Align.Center,
+                        Color = Blue,
+                        Columns =
+                        {
+                            new Column {Width = GridLength.Auto },
+                            new Column {Width = GridLength.Auto },
+                        },
+                        Children =
+                        {
+                            new Cell("Transaction Time"),
+                            new Cell("Transaction Amount"),
+                            transactions.Select(xact => new[]
+                            {
+                                new Cell(xact.TransactionTime) {Background = (xact.TransactionAmount > 0 ? DarkGreen : DarkRed), Color = Gray },
+                                new Cell(String.Format("{0:C2}", xact.TransactionAmount)) {TextAlign = TextAlign.Right, Background = (xact.TransactionAmount > 0 ? DarkGreen : DarkRed), Color = Gray }
+                            })
+                        }
+                    },
+                    new Span("\nPress any key to return to your account menu.")
+                }
+            });
+            Console.ReadKey();
         }
 
         internal static decimal DisplayTransactionPrompt(decimal currentBalance, string transactionType)

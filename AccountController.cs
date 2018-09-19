@@ -33,6 +33,7 @@ namespace MarksBankLedger
 
         internal static void MenuTop()
         {
+            LedgerInterface.DisplayWelcome();
             while (!exiting)
             {
                 toTop = false;
@@ -45,6 +46,7 @@ namespace MarksBankLedger
                     GuestMenu();
                 }
             }
+            LedgerInterface.DisplayGoodbye();
         }
 
         private static void GuestMenu()
@@ -158,7 +160,9 @@ namespace MarksBankLedger
 
         private static void TransactionHistory()
         {
-            throw new NotImplementedException();
+            LedgerInterface.DisplayTransactionHistory(currentUser.AccountEmail,
+                                                      transactionRepository.GetAccountBalance(currentUser.AccountId),
+                                                      transactionRepository.GetRecentTransactionsByAccountId(currentUser.AccountId, 25));
         }
 
         private static void AddDeposit()
@@ -184,7 +188,7 @@ namespace MarksBankLedger
             decimal amount = LedgerInterface.DisplayTransactionPrompt(balance, "withdrawal");
             if (amount != 0)
             {
-                if (amount < balance)
+                if (amount <= balance)
                 {
                     Transaction deposit = new Transaction()
                     {

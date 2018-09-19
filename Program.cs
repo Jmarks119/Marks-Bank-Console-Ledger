@@ -10,8 +10,8 @@ namespace MarksBankLedger
     {
         static void Main()
         {
+            Console.CursorVisible = false;
             Console.OutputEncoding = Encoding.UTF8;
-            LedgerInterface.DisplayWelcome();
             AccountController.MenuTop();
         }
     }
