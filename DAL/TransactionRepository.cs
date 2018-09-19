@@ -23,7 +23,7 @@ namespace MarksBankLedger.DAL
 
         public decimal GetAccountBalance(Guid guid)
         {
-            return _context.Accounts.Find(guid).Transactions.Select(x => x.TransactionAmount).Sum();
+            return _context.Accounts.Find(guid).Transactions.Select(x => x.TransactionAmount).DefaultIfEmpty().Sum();
         }
 
         public void InsertTransaction(Transaction transaction)

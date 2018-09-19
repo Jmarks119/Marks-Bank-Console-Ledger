@@ -19,6 +19,7 @@ namespace MarksBankLedger
         private static Account currentUser;
 
         private static bool exiting = false;
+        private static bool toTop = false;
 
         static AccountController()
         {
@@ -30,9 +31,25 @@ namespace MarksBankLedger
             transactionRepository = new TransactionRepository(context);
         }
 
-        public static void GuestMenu()
+        internal static void MenuTop()
         {
-            while (true)
+            while (!exiting)
+            {
+                toTop = false;
+                if (currentUser != null)
+                {
+                    MemberMenu();
+                }
+                else
+                {
+                    GuestMenu();
+                }
+            }
+        }
+
+        private static void GuestMenu()
+        {
+            while (!(exiting || toTop))
             {
                 Dictionary<string, Tuple<string, Action>> optionsDict = new Dictionary<string, Tuple<string, Action>>()
                 {
@@ -41,11 +58,27 @@ namespace MarksBankLedger
                 };
                 string selection = LedgerInterface.DisplayMenu(optionsDict, "guest");
                 optionsDict[selection].Item2.Invoke(); //Call the action in the tuple for the selected Dictionary entry.
-                if (exiting)
-                {
-                    return;
-                }
             }
+            return;
+        }
+
+        private static void MemberMenu()
+        {
+            while (!(exiting || toTop))
+            {
+                Dictionary<string, Tuple<string, Action>> optionsDict = new Dictionary<string, Tuple<string, Action>>()
+                {
+                    {"V", new Tuple<String, Action>("View your account balance and transaction history", TransactionHistory) },
+                    {"D", new Tuple<string, Action>("Make a deposit to your account", AddDeposit) },
+                    {"W", new Tuple<string, Action>("Make a withdrawal from your account", AddWithdrawal) },
+                    {"O", new Tuple<string, Action>("Log out of your account and return to the login menu", Logout) },
+                    {"Q", new Tuple<string, Action>("Exit this program", Exit) }
+
+                };
+                string selection = LedgerInterface.DisplayMenu(optionsDict, currentUser.AccountEmail);
+                optionsDict[selection].Item2.Invoke(); //Call the action in the tuple for the selected Dictionary entry.
+            }
+            return;
         }
 
         private static void HandleLogin()
@@ -94,6 +127,7 @@ namespace MarksBankLedger
                                     user = CreateNewBankAccount(email);
                                 }
                                 currentUser = user;
+                                toTop = true;
                                 return;
                             }
                         }
@@ -101,7 +135,8 @@ namespace MarksBankLedger
                     }
                     else
                     {
-                        LedgerInterface.DisplayConfirmation("Something went wrong in sending your login email. Please contact a Marks Bank admin.");
+                        LedgerInterface.DisplayConfirmation("Something went wrong in sending your login email. Please contact a Marks Bank admin.\n" +
+                                                            "(Sometimes the email fails for reasons I haven't quite tracked down. Try again and it'll probably work)");
                     }
                 }
                 catch (ArgumentException)
@@ -119,6 +154,60 @@ namespace MarksBankLedger
                     }
                 }
             }
+        }
+
+        private static void TransactionHistory()
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void AddDeposit()
+        {
+            decimal amount = LedgerInterface.DisplayTransactionPrompt(transactionRepository.GetAccountBalance(currentUser.AccountId), "deposit");
+            if (amount != 0)
+            {
+                Transaction deposit = new Transaction()
+                {
+                    TransactionAmount = amount,
+                    Account = currentUser,
+                    TransactionTime = DateTime.Now
+                };
+                transactionRepository.InsertTransaction(deposit);
+                transactionRepository.Save();
+            }
+            return;
+        }
+
+        private static void AddWithdrawal()
+        {
+            decimal balance = transactionRepository.GetAccountBalance(currentUser.AccountId);
+            decimal amount = LedgerInterface.DisplayTransactionPrompt(balance, "withdrawal");
+            if (amount != 0)
+            {
+                if (amount < balance)
+                {
+                    Transaction deposit = new Transaction()
+                    {
+                        TransactionAmount = -amount,
+                        Account = currentUser,
+                        TransactionTime = DateTime.Now
+                    };
+                    transactionRepository.InsertTransaction(deposit);
+                    transactionRepository.Save();
+                }
+                else
+                {
+                    LedgerInterface.DisplayConfirmation("Your account is currently restricted to maintaining a non-negative balance.\n" +
+                                                        "You may contact a Marks Bank account manager about your withdrawal limit");
+                }
+            }
+            return;
+        }
+
+        private static void Logout()
+        {
+            currentUser = null;
+            toTop = true;
         }
 
         private static void Exit()
@@ -151,7 +240,8 @@ namespace MarksBankLedger
             Account account = new Account
             {
                 AccountId = Guid.NewGuid(),
-                AccountEmail = accountEmail
+                AccountEmail = accountEmail,
+                Transactions = new List<Transaction>()
             };
             accountRepository.InsertAccount(account);
             accountRepository.Save();

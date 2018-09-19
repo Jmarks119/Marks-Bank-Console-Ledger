@@ -140,5 +140,60 @@ namespace MarksBankLedger
                 return false;
             }
         }
+
+        internal static decimal DisplayTransactionPrompt(decimal currentBalance, string transactionType)
+        {
+            bool returning = false;
+            bool invalidEntry = false;
+            StringBuilder entry = new StringBuilder();
+            decimal entryDec = 0;
+            while (!returning)
+            {
+                const string currencyChars = "0123456789.";
+                Console.Clear();
+                ConsoleRenderer.RenderDocument(new Document()
+                    {
+                        TextAlign = TextAlign.Center,
+                        Color = DarkYellow,
+                        Padding = 2,
+                        Children =
+                    {
+                        new Span("Your current account balance is "), new Span(String.Format("{0:C2}", currentBalance) + "\n") {Color = Green},
+                        new Span($"Please enter the amount of your {transactionType} (enter 0 to cancel): "),
+                        new Span("$" + entry.ToString() + "\n") {Color = (transactionType == "deposit" ? Green : Red)},
+                        invalidEntry ? new Span("Invalid Entry: You must enter a number of 28 or less digits with up to two decimal places.")
+                                     : null
+                    }
+                });
+                char character = Console.ReadKey().KeyChar;
+                if (character == '\r')
+                {
+                    if (decimal.TryParse(entry.ToString(), out entryDec))
+                    {
+                        if (Decimal.Round(entryDec, 2) == entryDec) // This logic checks that the user hasn't entered a number with more than 2 decimal places.
+                        {
+                            returning = true;
+                        }
+                        else
+                        {
+                            invalidEntry = true;
+                        }
+                    }
+                    else
+                    {
+                        invalidEntry = true;
+                    }
+                }
+                else if (character == '\b')
+                {
+                    entry.Remove(entry.Length - 1, 1);
+                }
+                else if (currencyChars.Contains(character))
+                {
+                    entry.Append(character);
+                }
+            }
+            return entryDec;
+        }
     }
 }
