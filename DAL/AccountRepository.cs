@@ -24,7 +24,7 @@ namespace MarksBankLedger.DAL
 
         public Account GetAccountByEmail(string email)
         {
-            return _context.Accounts.Where(x => x.AccountEmail == email).Single();
+            return _context.Accounts.Where(x => x.AccountEmail == email).SingleOrDefault();
         }
 
         public void InsertAccount(Account account)
