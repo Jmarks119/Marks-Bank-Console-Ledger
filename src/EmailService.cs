@@ -16,11 +16,11 @@ namespace MarksBankLedger
         {
             client = new SmtpClient
             {
-                Host = "smtp.mail.yahoo.com",
+                Host = "smtp.gmail.com",
                 Port = 587,
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("marksbankledger@yahoo.com", "ThisIsABadPractice9"), //Obviously credentials should never be in code that's checked into version control.
+                Credentials = new NetworkCredential("marksbankledger@gmail.com", "ThisIsABadPractice9"), //Obviously credentials should never be in code that's checked into version control.
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 Timeout = 10000
             };
@@ -31,7 +31,7 @@ namespace MarksBankLedger
             try
             {
                 MailMessage mail = new MailMessage();
-                mail.From = new MailAddress("marksbankledger@yahoo.com");
+                mail.From = new MailAddress("marksbankledger@gmail.com");
                 mail.To.Add(recieveAddress);
                 mail.Subject = "Your Login For MarksBank";
                 mail.Body = "Your login token for Marks Bank is " + confirmationString;

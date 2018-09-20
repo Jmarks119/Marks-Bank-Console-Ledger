@@ -118,10 +118,7 @@ namespace MarksBankLedger
                     {
                         for (int r = 0; r < 3; r++)
                         {
-                            string response = LedgerInterface.DisplayPrompt("Please enter the login token in your provided email, 3 failures will cancel the login\n" +
-                                                                            "(This can take some time, Yahoo's SMTP server does not seem to be very fast)\n" +
-                                                                            $"DEV NOTE: This actually takes much too long to be usable. For convenince's sake your login token is {loginToken}\n" +
-                                                                            "But you can note it down and check your inbox later to see that the passwordless authentication does work.\n");
+                            string response = LedgerInterface.DisplayPrompt("Please enter the login token in your provided email, 3 failures will cancel the login\n");
                             if (response == loginToken)
                             {
                                 if (newAccount)
